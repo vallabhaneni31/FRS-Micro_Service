@@ -1,0 +1,75 @@
+# .gitleaks.toml — FIX-029: Secret scanning configuration
+# Prevents credentials, API keys, and biometric data from being committed.
+# Run: gitleaks detect --source . --config .gitleaks.toml
+
+title = "FRS Secret Scanning Rules"
+
+[extend]
+useDefault = true   # inherit all built-in gitleaks rules
+
+# ── FRS-specific custom rules ─────────────────────────────────────────────────
+
+[[rules]]
+id          = "frs-enrollment-token-secret"
+description = "FRS ENROLLMENT_TOKEN_SECRET hardcoded value"
+regex       = '''(?i)enrollment[_-]token[_-]secret\s*[=:]\s*["']?[\w+/=-]{20,}'''
+tags        = ["frs", "secret", "biometric"]
+
+[[rules]]
+id          = "frs-device-jwt-secret"
+description = "FRS DEVICE_JWT_SECRET hardcoded value"
+regex       = '''(?i)device[_-]jwt[_-]secret\s*[=:]\s*["']?[\w+/=-]{20,}'''
+tags        = ["frs", "secret", "device"]
+
+[[rules]]
+id          = "frs-embedding-key"
+description = "FRS AES embedding encryption key (64 hex chars)"
+regex       = '''(?i)embedding[_-]encryption[_-]key\s*[=:]\s*["']?[0-9a-fA-F]{64}["']?'''
+tags        = ["frs", "secret", "biometric", "encryption"]
+
+[[rules]]
+id          = "frs-jetson-event-secret"
+description = "FRS JETSON_EVENT_SECRET value"
+regex       = '''(?i)jetson[_-]event[_-]secret\s*[=:]\s*["']?[\w+/=-]{20,}'''
+tags        = ["frs", "secret", "device"]
+
+[[rules]]
+id          = "frs-face-embedding-raw"
+description = "Raw face embedding vector committed to code (512 floats)"
+regex       = '''\[\s*-?0\.\d+\s*,\s*-?0\.\d+\s*,\s*-?0\.\d+\s*,'''
+tags        = ["frs", "biometric", "pii"]
+
+[[rules]]
+id          = "frs-keycloak-client-secret"
+description = "Keycloak client secret"
+regex       = '''(?i)keycloak[_-]client[_-]secret\s*[=:]\s*["']?[A-Za-z0-9\-_]{20,}'''
+tags        = ["frs", "secret", "auth"]
+
+[[rules]]
+id          = "frs-hardcoded-jwt"
+description = "Hardcoded JWT (access/device token) committed to code — none of the rules above catch this shape, since it's not tied to a specific variable name"
+regex       = '''eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}'''
+tags        = ["frs", "secret", "jwt"]
+
+# ── Allowlist ────────────────────────────────────────────────────────────────
+[allowlist]
+description = "Global allowlist"
+paths       = [
+  ".gitleaks.toml",
+  "docs/",
+  "*.md",
+  "*.test.js",
+  "*.spec.js",
+  "**/__tests__/**",
+  "**/fixtures/**",
+  "**/.env.example",
+]
+regexes = [
+  # placeholder / example values
+  '''your[_-]?secret[_-]?here''',
+  '''changeme''',
+  '''example[_-]?secret''',
+  '''<YOUR_.*>''',
+  # Base64 that is clearly documentation
+  '''AAAA[A-Za-z0-9+/=]{10,}''',
+]

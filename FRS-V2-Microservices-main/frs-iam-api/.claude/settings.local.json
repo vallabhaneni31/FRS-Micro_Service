@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s --max-time 15 \"https://raw.githubusercontent.com/kafbat/kafka-ui/main/documentation/compose/auth-oauthgoogle.yml\" -o /tmp/kui_oauth_example.yml)",
+      "Read(//tmp/**)",
+      "Bash(curl -s --max-time 15 \"https://raw.githubusercontent.com/kafbat/kafka-ui/main/documentation/compose/rbac-related/rbac.yml\" -o /tmp/kui_rbac_example.yml)",
+      "Bash(python3 -c ' *)"
+    ]
+  }
+}

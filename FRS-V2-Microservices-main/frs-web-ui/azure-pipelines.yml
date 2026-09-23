@@ -1,0 +1,73 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+
+ name: ${{ parameters.MajorVersion }}.${{ parameters.MinorVersion }}.${{ parameters.Build }}$(Rev:.r)
+
+ trigger:
+  branches:
+    include:
+      - develop2
+      - release-*
+
+ pool:
+  vmImage: ubuntu-latest
+
+ variables:
+   - group: frs-frontend-secrets
+
+# Reference the templates repo.
+ resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: Motivity-FRS-V2/frs-devops-templates
+      ref: refs/heads/main
+
+ parameters:
+  - name: MajorVersion
+    type: string
+    default: '1'
+  - name: MinorVersion
+    type: string
+    default: '0'
+  - name: Build
+    type: string
+    default: '0'
+
+ steps:
+
+   - template: npmbuild.yml@templates
+     parameters:
+      workingDirectory: '.'
+
+   - template: getbranchtype.yml@templates
+     parameters:
+      snapshotBranch: 'develop2'
+
+   - template: getversion.yml@templates
+     parameters:
+      buildnumber: '$(Build.BuildNumber)'
+      azuredevopspat: '$(azuredevopspat)'
+      applicationName: 'frs-frontend'
+      releaseFeed: '$(releaseFeed)'
+      snapshotBranch: 'develop2'
+
+   - template: createazuregittag.yml@templates
+     parameters:
+      version: '$(tagname)'
+      targetRepoName: 'frs-web-ui'
+      azureorginizationname: 'ML-AIML-COE'
+      azureprojectname: 'Motivity-FRS-V2'
+      azuredevopspat: '$(azuredevopspat)'
+
+   - template: pushtoazurefeed.yml@templates
+     parameters:
+      buildnumber: '$(version)'
+      artifactfeed: '$(artifactfeed)'
+      applicationName: 'frs-frontend'
+      buildfilespath: '$(Build.SourcesDirectory)/dist'
+      artifactname: '$(artifactname)'
+      project: 'Motivity-FRS-V2'

@@ -1,0 +1,118 @@
+server:
+  port: ${PORT:4002}
+
+spring.servlet.multipart:
+  # Default is 1MB per file — too small for real enrollment/boarding-event
+  # JPEGs. 10MB comfortably covers a phone/Jetson-camera photo.
+  max-file-size: 10MB
+  max-request-size: 10MB
+
+spring:
+  application:
+    name: api-transport
+
+  # Primary datasource — the new, isolated transport_intelligence database.
+  # Auto-configured by Spring Boot from these properties; this is the only
+  # datasource Hibernate/JPA ever touches.
+  datasource:
+    url: ${TRANSPORT_DB_URL:jdbc:postgresql://localhost:5432/transport_intelligence}
+    username: ${TRANSPORT_DB_USERNAME:postgres}
+    password: ${TRANSPORT_DB_PASSWORD:postgres}
+    hikari:
+      # Postgres's max_connections (100) is shared across every service on
+      # this host, not just this one. Spring Boot's own default pool size
+      # (10) is oversized for a single-instance service this size, and adds
+      # up fast in the test suite specifically — every @SpringBootTest class
+      # here gets its own Spring context (the fake-Keycloak
+      # @DynamicPropertySource on a random port defeats context caching
+      # across classes), each holding its own full pool concurrently. Hit
+      # "FATAL: sorry, too many clients already" running the full suite
+      # alongside live production traffic before this was added.
+      maximum-pool-size: 5
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      # Flyway (below) is the only owner of this schema — Hibernate must
+      # never auto-create or auto-alter tables. "validate" fails startup
+      # loudly if the entities and the migration ever drift, instead of
+      # silently issuing DDL.
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+
+  # Phase 2d: event ingestion + Kafka. Same broker env var the existing
+  # platform already uses (KAFKA_BROKERS) — same Kafka cluster, new topics
+  # only (see config/KafkaTopicConfig.java). Kept under this SAME top-level
+  # `spring:` block, not a second one — a second `spring:` key later in this
+  # file would be a duplicate YAML key and silently clobber the datasource/
+  # jpa/flyway config above depending on parser behavior; caught before ever
+  # testing it, not discovered by a failed boot.
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    producer:
+      client-id: ${KAFKA_CLIENT_ID:api-transport}
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+    # Phase 2e: worker. Manual ack (see KafkaConsumerConfig) — offsets are
+    # only committed after a whole polled batch has been handled (each
+    # event either processed or routed to the dead-letter topic), never
+    # auto-committed on a timer.
+    consumer:
+      group-id: ${KAFKA_GROUP_ID:frs-transport-worker-group}
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+
+# Secondary datasource — read-only into the EXISTING shared platform
+# database (attendance_intelligence). NOT under spring.datasource.* on
+# purpose, so Spring Boot's JPA/Flyway auto-configuration never touches it;
+# wired up manually and read-only-enforced in FrsReadOnlyDataSourceConfig.
+frs:
+  datasource:
+    url: ${FRS_DB_URL:jdbc:postgresql://localhost:5432/attendance_intelligence}
+    username: ${FRS_DB_USERNAME:postgres}
+    password: ${FRS_DB_PASSWORD:postgres}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+# Phase 2c: security. Reuses the SAME env var names the existing platform
+# already uses (backend/api/.env: KEYCLOAK_URL, KEYCLOAK_REALM,
+# KEYCLOAK_AUDIENCE) — same Keycloak deployment, same tenant-realm topology,
+# no separate configuration to maintain. See SecurityConfig/KeycloakAuthFilter.
+keycloak:
+  url: ${KEYCLOAK_URL:http://localhost:9090/auth}
+  realm: ${KEYCLOAK_REALM:attendance}
+  audience: ${KEYCLOAK_AUDIENCE:attendance-api}
+
+transport:
+  kafka:
+    topic-prefix: ${KAFKA_TOPIC_PREFIX:frs.}
+
+  # Track B (Passenger/Enrollment/Face Matching) — v1 photo storage is local
+  # disk, outside the git working tree, sibling to the repo. See
+  # TransportStorageService for why: kept behind an interface so a future S3
+  # implementation is a drop-in swap.
+  storage:
+    local-root: ${TRANSPORT_STORAGE_LOCAL_ROOT:/home/ubuntu/FRS_DEV/transport-photos}
+
+  # Dedicated Transport face-quality-svc instance (port 5051) — NOT
+  # corporate's :5050 instance. Same script (backend/scripts/face_quality_service.py),
+  # deployed as its own PM2 process (face-quality-svc-transport) to avoid
+  # resource contention with corporate's latency-sensitive enrollment/re-ID
+  # flows sharing the same single-process, unscaled Flask dev server.
+  face-quality:
+    url: ${TRANSPORT_FACE_QUALITY_URL:http://127.0.0.1:5051}
+  face-matching:
+    threshold: ${TRANSPORT_FACE_MATCH_THRESHOLD:0.50}

@@ -1,0 +1,58 @@
+# Python dependencies for face_quality_service.py (the face-quality sidecar).
+#
+# Install into the venv the PM2 processes run from:
+#   cd backend/api/scripts
+#   python3 -m venv venv
+#   ./venv/bin/python3 -m pip install -r requirements.txt
+#
+# Model weights are NOT vendored and download on first run: InsightFace
+# buffalo_sc into ~/.insightface/models, and the MediaPipe Face Landmarker
+# bundle into ./models (see mediapipe_engine.py). Both need outbound HTTPS
+# the first time the service starts on a new host.
+#
+# Versions pinned to what is running on the dev host as of 2026-08-28.
+
+Flask==3.1.3
+numpy==2.4.6
+opencv-python==4.13.0.92
+
+# InsightFace (buffalo_sc) — still required regardless of QUALITY_ENGINE:
+# it backs /embed (visitor re-ID) and the Transport :5051 instance.
+insightface==1.0.1
+onnxruntime==1.26.0
+
+# MediaPipe engine (QUALITY_ENGINE=mediapipe) — enrollment quality/pose.
+# scipy supplies the rotation-matrix -> Euler conversion for head pose.
+mediapipe==1.0.1
+scipy==1.17.1
+
+# Python dependencies for vlm_quality_service.py (the VLM visitor-photo
+# quality-gate sidecar). Kept separate from requirements.txt: the
+# transformers/torch stack is heavy and unrelated to the InsightFace/OpenCV
+# stack those other services use — a host that only runs face_quality_service.py
+# shouldn't be forced to install this.
+#
+# Install into its own venv:
+#   cd backend/api/scripts
+#   python3 -m venv venv-vlm
+#   ./venv-vlm/bin/python3 -m pip install -r requirements-vlm.txt
+#
+# Model weights are NOT vendored and download on first run (vikhyatk/moondream2
+# from Hugging Face Hub) — needs outbound HTTPS the first time the service
+# starts on a new host.
+#
+# Use the CPU build of torch unless the host actually has a CUDA GPU + drivers
+# set up (VLM_DEVICE=cuda) — see https://pytorch.org/get-started/locally/ for
+# the correct index URL if a GPU build is needed instead.
+
+Flask==3.1.3
+Pillow==11.0.0
+torch==2.5.1
+torchvision==0.20.1
+transformers==4.46.3
+einops==0.8.0
+
+# Loads backend/api/.env directly so VLM_MODEL_ID etc. live in one place
+# alongside the Node backend's own config, instead of needing to be
+# re-exported as shell env vars every time this script is launched.
+python-dotenv==1.0.1

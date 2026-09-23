@@ -1,0 +1,11 @@
+{
+  "extraKnownMarketplaces": {
+    "ml-tools": {
+      "source": { "source": "github", "repo": "MLMCPS/ml-specs" },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": {
+    "ml-specs@ml-tools": true
+  }
+}

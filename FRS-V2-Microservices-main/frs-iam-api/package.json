@@ -1,0 +1,14 @@
+{
+  "name": "@motivity/frs",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Motivity Face Recognition System — repo root. This file has no dependencies of its own and is not an npm workspace: frontend/, backend/api/, and backend/api-retail/ are independent services, each with its own package.json, package-lock.json, and node_modules. Run `npm install` inside each one separately. The scripts below are just thin convenience wrappers (via --prefix) for running them from the repo root.",
+  "scripts": {
+    "install:all": "npm --prefix frontend install && npm --prefix backend/api install && npm --prefix backend/api-retail install",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:api": "npm --prefix backend/api run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "test:frontend": "npm --prefix frontend run test",
+    "test:api": "npm --prefix backend/api run test"
+  }
+}

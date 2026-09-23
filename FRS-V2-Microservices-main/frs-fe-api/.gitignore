@@ -1,0 +1,175 @@
+# ==============================================================================
+# Environment, Credentials & Local Secrets
+# ==============================================================================
+.env
+.env.local
+.env.*.local
+.env.bak*
+*.env.bak*
+.env.backup*
+!.env.example
+*.env
+
+# Certificates & Private Keys
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+
+# Local npm/yarn prefix & configuration (machine-specific)
+.npmrc
+.yarnrc
+.yarnrc.yml
+.npm/
+
+# ==============================================================================
+# Dependencies & Package Managers
+# ==============================================================================
+node_modules/
+node_modules
+.pnp
+.pnp.js
+.yarn-integrity
+
+# ==============================================================================
+# Build & Compiler Outputs
+# ==============================================================================
+dist/
+dist-ssr/
+build/
+out/
+target/
+*.class
+*.local
+.cache/
+.parcel-cache/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+
+# ==============================================================================
+# Log & Runtime Debug Files
+# ==============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ==============================================================================
+# OS-Specific Files & Metadata
+# ==============================================================================
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.stackdump
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ==============================================================================
+# IDEs, Code Editors & AI Agent Artifacts
+# ==============================================================================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+.vscode-test/
+*.code-workspace
+.history/
+
+.codex
+.gemini/
+.antigravity/
+.claude-scratch/
+.cursor/
+.cursorrules
+.windsurf/
+.zed/
+
+# Spec-Driven Development & Knowledge Layer (Explicitly Tracked)
+!specs/
+!specs/**
+!docs/
+!docs/**
+!CLAUDE.md
+
+.idea/
+*.iws
+*.iml
+*.ipr
+
+.vs/
+*.suo
+*.user
+*.userosv
+*.sln.docstates
+*.ntvs*
+*.njsproj
+*.sln
+
+*.sw?
+*.swp
+*.swo
+\#*\#
+.\#*
+
+# ==============================================================================
+# Databases, Local Storage & Runtime Uploads
+# ==============================================================================
+*.sqlite
+*.sqlite3
+*.db
+*.sql
+!src/db/migrations/*.sql
+!src/retail/db/migrations/*.sql
+
+# Runtime uploads — binary data / PII (never commit)
+uploads/
+
+# ==============================================================================
+# Temporary Files, Scratch Scripts & Debug Artifacts
+# ==============================================================================
+tmp/
+temp/
+tmp_*
+*.tmp
+*.temp
+scratch_*.js
+
+# Backup Files
+*.bak
+*.backup
+*.before-*
+*.pre-*
+*.orig
+*.rej
+
+# Local Trackers, Reports & Audits
+*.xlsx
+
+# Graphify (local codebase knowledge graph) — generated, machine-specific
+graphify-out/
+*.graphify-bak

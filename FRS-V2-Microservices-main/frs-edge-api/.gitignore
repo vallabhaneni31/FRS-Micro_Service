@@ -1,0 +1,93 @@
+# ==============================================================================
+# Environment, Credentials & Local Secrets
+# ==============================================================================
+.env
+.env.local
+.env.*.local
+.env.retail
+.env.retail.local
+.env.bak*
+*.env.bak*
+.env.backup*
+!.env.example
+!.env.retail.example
+*.env
+
+# Certificates & Private Keys
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+
+# Local npm/yarn prefix & configuration (machine-specific)
+.npmrc
+.yarnrc
+.yarnrc.yml
+.npm/
+
+# ==============================================================================
+# Dependencies & Package Managers
+# ==============================================================================
+node_modules/
+node_modules
+.pnp
+.pnp.js
+.yarn-integrity
+
+# ==============================================================================
+# Build & Compiler Outputs
+# ==============================================================================
+dist/
+dist-ssr/
+build/
+out/
+*.local
+.cache/
+.eslintcache
+
+# ==============================================================================
+# Log & Runtime Debug Files
+# ==============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==============================================================================
+# Uploaded / generated content (device photos land here at runtime)
+# ==============================================================================
+uploads/attendance-photos/*
+uploads/enrollment-photos/*
+uploads/remote-enrollment/*
+!uploads/attendance-photos/.gitkeep
+!uploads/enrollment-photos/.gitkeep
+!uploads/remote-enrollment/.gitkeep
+temp/
+
+# ==============================================================================
+# OS-Specific Files & Metadata
+# ==============================================================================
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.stackdump
+*.lnk
+.DS_Store
+
+# Spec-Driven Development & Knowledge Layer (Explicitly Tracked)
+!specs/
+!specs/**
+!docs/
+!docs/**
+!CLAUDE.md
+
+# Graphify (local codebase knowledge graph) — generated, machine-specific
+graphify-out/
+*.graphify-bak

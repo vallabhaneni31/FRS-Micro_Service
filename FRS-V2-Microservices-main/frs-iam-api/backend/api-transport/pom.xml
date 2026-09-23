@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.4</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.motivity</groupId>
+  <artifactId>api-transport</artifactId>
+  <version>0.1.0</version>
+  <name>api-transport</name>
+  <description>Transport vertical backend microservice — bus/route/device management, boarding/deboarding event ingestion, occupancy tracking. Owns its own database (transport_intelligence); reuses the existing platform's Keycloak realms for human auth and reads tenant identity read-only from the shared attendance_intelligence database.</description>
+
+  <properties>
+    <java.version>21</java.version>
+  </properties>
+
+  <dependencies>
+    <!-- Phase 2a: bare web + health check skeleton. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <!-- Phase 2b: database layer. spring-boot-starter-data-jpa + Flyway drive
+         the primary (transport_intelligence) datasource, which Spring Boot
+         auto-configures from spring.datasource.*. The secondary read-only
+         attendance_intelligence connection is plain JDBC (see DataSourceConfig,
+         task 4) — no JPA entities for the shared DB, on purpose, so there is
+         no ORM path that could ever write to it. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+    </dependency>
+
+    <!-- Phase 2c: security layer.
+         spring-boot-starter-security gives us SecurityFilterChain/SecurityContext
+         primitives. We do NOT use spring-boot-starter-oauth2-resource-server's
+         auto-configuration, because it assumes one static issuer — this
+         service (like the existing platform) has one Keycloak realm PER
+         TENANT, resolved dynamically per request from the token's own `iss`
+         claim. oauth2-jose is pulled in directly instead, just for its
+         NimbusJwtDecoder — one decoder instance built and cached per realm
+         the first time it's seen, not a single global one. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-jose</artifactId>
+    </dependency>
+    <!-- HS256 signing/verification for the per-device secret JWTs (mirrors
+         the existing platform's device auth, which uses the Node
+         `jsonwebtoken` library for the same HS256-per-device-secret scheme). -->
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-api</artifactId>
+      <version>0.12.6</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-impl</artifactId>
+      <version>0.12.6</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-jackson</artifactId>
+      <version>0.12.6</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Phase 2d: event ingestion API + Kafka producer.
+         Reuses the existing platform's real Kafka cluster (same brokers,
+         same "frs." topic prefix) — new topics, not new infrastructure,
+         mirroring how the DB/Keycloak reuse decisions already work. -->
+    <dependency>
+      <groupId>org.springframework.kafka</groupId>
+      <artifactId>spring-kafka</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.kafka</groupId>
+      <artifactId>spring-kafka-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

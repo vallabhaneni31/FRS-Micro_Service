@@ -1,0 +1,56 @@
+# .github/workflows/dast-scan.yml — FIX-033: Standalone OWASP ZAP DAST workflow
+# Runs full ZAP active scan against staging environment weekly.
+# Active scan is more thorough than baseline but requires a live staging env.
+
+name: DAST — OWASP ZAP Active Scan
+
+on:
+  schedule:
+    - cron: "0 4 * * 0"   # weekly Sunday 04:00 UTC
+  workflow_dispatch:        # manual trigger
+
+permissions:
+  contents: read
+  issues: write             # create issue on findings
+
+jobs:
+  zap-active-scan:
+    name: "ZAP Active Scan vs Staging"
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ZAP API Scan (OpenAPI)
+        uses: zaproxy/action-api-scan@v0.7.0
+        with:
+          target: "${{ vars.STAGING_API_URL }}/api"
+          format: openapi
+          rules_file_name: ".github/zap-rules.tsv"
+          cmd_options: >
+            -z "-config scanner.strength=HIGH"
+            -z "-config scanner.threadPerHost=2"
+        continue-on-error: true
+
+      - name: Upload ZAP HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-active-scan-${{ github.run_number }}
+          path: |
+            report_html.html
+            report_json.json
+
+      - name: Create issue on HIGH findings
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              title: `🚨 ZAP DAST: High severity findings — run #${context.runNumber}`,
+              body:  `OWASP ZAP active scan found high severity issues.\n\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\nReview the uploaded artifact for details.`,
+              labels: ['security', 'dast', 'priority:high']
+            });

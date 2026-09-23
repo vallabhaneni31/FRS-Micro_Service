@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ml-specs": {
+      "command": "node",
+      "args": [
+        "./mcp/ml-specs-server.mjs",
+        "--root",
+        "."
+      ]
+    }
+  }
+}

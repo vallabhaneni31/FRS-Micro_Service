@@ -1,0 +1,6 @@
+{
+  "enabledMcpjsonServers": [
+    "azure-devops"
+  ],
+  "enableAllProjectMcpServers": true
+}

@@ -1,0 +1,310 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  color-scheme: light;
+  --font-size: 16px;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #2563EB;
+  --primary-foreground: #ffffff;
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #2563EB;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  color-scheme: dark;
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: #3B82F6;
+  --primary-foreground: #ffffff;
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --input-background: oklch(0.205 0 0);
+  --ring: #3B82F6;
+  --switch-background: oklch(0.35 0 0);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    font-size: var(--font-size);
+    font-family: var(--font-sans);
+    /* Honour Inter's variable optical-size (opsz) axis we load from Google Fonts. */
+    font-optical-sizing: auto;
+    /* Crisper Inter rendering, especially on macOS/Retina. */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Form controls don't inherit font-family by default in all browsers. */
+  input,
+  button,
+  textarea,
+  select {
+    font-family: inherit;
+  }
+
+  /* Branded text selection — primary tint that stays legible in both themes. */
+  ::selection {
+    background-color: color-mix(in srgb, var(--primary) 24%, transparent);
+    color: var(--foreground);
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.4;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}
+
+/**
+ * Apple-style "liquid glass" material.
+ *
+ * One shared material for all shell chrome (sidebar, header, footer, mobile
+ * drawer): a translucent surface tint, heavy backdrop blur + saturation for
+ * vibrancy, a hairline border, and a top inset highlight that catches light
+ * like frosted glass. Needs translucent/colored content behind it to read —
+ * the shell provides an ambient gradient for that.
+ */
+@layer components {
+  .glass-panel {
+    background-color: color-mix(in srgb, var(--card) 68%, transparent);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    backdrop-filter: blur(22px) saturate(180%);
+    border-color: color-mix(in srgb, var(--foreground) 10%, transparent);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+      0 8px 30px -12px rgba(0, 0, 0, 0.18);
+  }
+
+  .dark .glass-panel {
+    background-color: color-mix(in srgb, var(--card) 52%, transparent);
+    border-color: color-mix(in srgb, #ffffff 12%, transparent);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.07),
+      0 10px 34px -12px rgba(0, 0, 0, 0.6);
+  }
+
+  /**
+   * Content-surface glass — the same material as .glass-panel but tuned for
+   * legibility on data-dense cards/tables: higher opacity and a lighter blur
+   * so text and table rows stay crisp while still reading as translucent glass.
+   * A component that passes its own bg-* utility (e.g. a colored emphasis card)
+   * still wins, because utilities cascade after this components layer.
+   */
+  .glass-card {
+    background-color: color-mix(in srgb, var(--card) 72%, transparent);
+    -webkit-backdrop-filter: blur(16px) saturate(165%);
+    backdrop-filter: blur(16px) saturate(165%);
+    border-color: color-mix(in srgb, #ffffff 55%, transparent);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
+      0 14px 40px -18px rgba(15, 23, 42, 0.35);
+  }
+
+  .dark .glass-card {
+    background-color: color-mix(in srgb, var(--card) 55%, transparent);
+    border-color: color-mix(in srgb, #ffffff 12%, transparent);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.07),
+      0 16px 44px -18px rgba(0, 0, 0, 0.65);
+  }
+
+  /* Graceful fallback where backdrop-filter is unsupported: stay opaque. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-panel,
+    .glass-card {
+      background-color: var(--card);
+    }
+  }
+
+  /**
+   * Ambient "wallpaper" the glass refracts. A soft, viewport-anchored mesh of
+   * brand-tinted radial blooms over the base background — without it, frosted
+   * white chrome on a white page is invisible. Tied to --primary so it follows
+   * the tenant's brand colour.
+   */
+  .app-canvas {
+    /* Neutral, colourless base — just enough grey to let frosted cards float,
+       with a faint monochrome dot texture. No colour blooms. */
+    background-color: #eef1f6;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.045) 1px, transparent 1.7px);
+    background-size: 22px 22px;
+    background-repeat: repeat;
+    background-attachment: fixed;
+  }
+
+  .dark .app-canvas {
+    background-color: #0b1018;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.04) 1px, transparent 1.7px);
+  }
+
+  /* Form validation button shake animation */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+  }
+
+  .animate-shake {
+    animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
+
+

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "azure-devops": {
+      "command": "npx",
+      "args": ["-y", "@azure-devops/mcp@2.10.0", "ML-AIML-COE", "-a", "azcli"],
+      "env": {
+        "ado_mcp_project": "Motivity-FRS-V2"
+      }
+    },
+    "ml-specs": {
+      "command": "npx",
+      "args": ["-y", "@mlmcps/ml-specs-mcp@1.2.0", "--root", "."]
+    }
+  }
+}

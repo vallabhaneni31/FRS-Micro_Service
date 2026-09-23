@@ -1,0 +1,4 @@
+target/
+.env.transport
+.env.transport.local
+*.log

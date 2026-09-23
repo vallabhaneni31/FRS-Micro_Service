@@ -1,0 +1,113 @@
+# ============================================================================
+# frs-edge-api CI  —  the edge-box (Jetson device) facing FRS API
+# ----------------------------------------------------------------------------
+# ============================================================================
+
+name: 1.0.0$(Rev:.r)        # Build.BuildNumber -> 1.0.0.N  (release-* runs get re-stamped to the rc by getversion)
+
+trigger:
+  branches:
+    include:
+      - develop
+      - release-*
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: frs-backend-edge-api-secrets
+  - name: pkgRoot
+    value: '$(Build.ArtifactStagingDirectory)/pkg'
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: Motivity-FRS-V2/frs-devops-templates
+      ref: refs/heads/main
+
+# ===========================================================================
+# 1.  Build + test  
+# ===========================================================================
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '22.x'
+  displayName: 'Toolchain: Node.js 22'
+
+- script: |
+    set -e
+    node -v && npm -v
+    npm ci
+  displayName: 'npm ci'
+
+- script: |
+    set -e
+    npm test
+  displayName: 'unit tests (gate)'
+  timeoutInMinutes: 10
+
+# ===========================================================================
+# 2.  Version, feed and tag
+# ===========================================================================
+- template: getbranchtype.yml@templates
+  parameters:
+    snapshotBranch: 'develop'
+
+- template: getversion.yml@templates
+  parameters:
+    buildnumber: '$(Build.BuildNumber)'
+    azuredevopspat: '$(azuredevopspat)'
+    applicationName: 'frs-edge-api'
+    releaseFeed: '$(releaseFeed)'
+    azureOrg: 'ML-AIML-COE'
+    azureProject: 'Motivity-FRS-V2'
+    snapshotBranch: 'develop'
+
+- template: createazuregittag.yml@templates
+  parameters:
+    version: '$(tagname)'
+    targetRepoName: 'frs-edge-api'
+    azureorginizationname: 'ML-AIML-COE'
+    azureprojectname: 'Motivity-FRS-V2'
+    azuredevopspat: '$(azuredevopspat)'
+
+# ===========================================================================
+# 3.  Stage the deployable source
+# ===========================================================================
+- script: |
+    set -e
+    mkdir -p "$(pkgRoot)"
+    cp -r src "$(pkgRoot)"/
+    cp    package.json package-lock.json "$(pkgRoot)"/
+  displayName: 'stage source'
+
+- script: |
+    set -e
+    cat > "$(pkgRoot)/BUILD_INFO" <<EOF
+    version=$(version)
+    branch=$(Build.SourceBranchName)
+    commit=$(Build.SourceVersion)
+    buildNumber=$(Build.BuildNumber)
+    buildId=$(Build.BuildId)
+    builtUtc=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+    EOF
+    echo "---- BUILD_INFO ----"
+    cat "$(pkgRoot)/BUILD_INFO"
+    echo
+    echo "---- package contents ----"
+    ls -la "$(pkgRoot)"
+    echo
+    echo "package size: $(du -sh "$(pkgRoot)" | cut -f1)"
+  displayName: 'package: write BUILD_INFO + summary'
+
+# ===========================================================================
+# 4.  Publish
+# ===========================================================================
+- template: pushtoazurefeed.yml@templates
+  parameters:
+    buildnumber: '$(version)'
+    artifactfeed: '$(artifactfeed)'
+    applicationName: 'frs-edge-api'
+    buildfilespath: '$(pkgRoot)'
+    artifactname: '$(artifactname)'
+    project: 'Motivity-FRS-V2'

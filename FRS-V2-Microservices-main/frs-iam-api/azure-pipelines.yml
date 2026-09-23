@@ -1,0 +1,123 @@
+# ============================================================================
+# FRS Core API CI
+# ============================================================================
+
+name: 1.0.0$(Rev:.r)        # Build.BuildNumber -> 1.0.0.N  (release-* runs get re-stamped to the rc by getversion)
+
+trigger:
+  branches:
+    include:
+      - develop2
+      - release-*
+  paths:
+    include:
+      - backend/api/**
+      - azure-pipelines.yml
+    
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: frs-backend-iam-api-secrets
+  - name: pkgRoot
+    value: '$(Build.ArtifactStagingDirectory)/pkg'
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: Motivity-FRS-V2/frs-devops-templates
+      ref: refs/heads/main
+
+steps:
+
+# ===========================================================================
+# 1.  Build + test
+# ===========================================================================
+- task: NodeTool@0
+  inputs:
+    versionSpec: '22.x'
+  displayName: 'Toolchain: Node.js 22'
+
+- script: |
+    set -e
+    node -v && npm -v
+    npm ci
+  workingDirectory: backend/api
+  displayName: 'api: npm ci'
+
+- script: |
+    set -e
+    node --test src/tests/password.test.js src/tests/security.test.js
+  workingDirectory: backend/api
+  displayName: 'api: unit tests (gate)'
+
+# ===========================================================================
+# 2.  Version, feed and tag
+# ===========================================================================
+
+- template: getbranchtype.yml@templates
+  parameters:
+    snapshotBranch: 'develop2'
+
+- template: getversion.yml@templates
+  parameters:
+    buildnumber: '$(Build.BuildNumber)'
+    azuredevopspat: '$(azuredevopspat)'
+    applicationName: 'frs-backend'
+    releaseFeed: '$(releaseFeed)'
+    azureOrg: 'ML-AIML-COE'
+    azureProject: 'Motivity-FRS-V2'
+    snapshotBranch: 'develop2'
+
+- template: createazuregittag.yml@templates
+  parameters:
+    version: '$(tagname)'
+    targetRepoName: 'frs-core-api'
+    azureorginizationname: 'ML-AIML-COE'
+    azureprojectname: 'Motivity-FRS-V2'
+    azuredevopspat: '$(azuredevopspat)'
+
+# ===========================================================================
+# 3.  Stage the deployable source
+# ===========================================================================
+
+- script: |
+    set -e
+    mkdir -p "$(pkgRoot)"
+    cd backend/api
+    cp -r src scripts conf schemas "$(pkgRoot)"/
+    cp    package.json package-lock.json "$(pkgRoot)"/
+    rm -rf "$(pkgRoot)/scripts/venv" "$(pkgRoot)/scripts/__pycache__"
+  displayName: 'api: stage source'
+
+- script: |
+    set -e
+    cat > "$(pkgRoot)/BUILD_INFO" <<EOF
+    version=$(version)
+    branch=$(Build.SourceBranchName)
+    commit=$(Build.SourceVersion)
+    buildNumber=$(Build.BuildNumber)
+    buildId=$(Build.BuildId)
+    builtUtc=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+    EOF
+    echo "---- BUILD_INFO ----"
+    cat "$(pkgRoot)/BUILD_INFO"
+    echo
+    echo "---- package contents ----"
+    ls -la "$(pkgRoot)"
+    echo
+    echo "package size: $(du -sh "$(pkgRoot)" | cut -f1)"
+  displayName: 'package: write BUILD_INFO + summary'
+
+# ===========================================================================
+# 4.  Publish
+# ===========================================================================
+- template: pushtoazurefeed.yml@templates
+  parameters:
+    buildnumber: '$(version)'
+    artifactfeed: '$(artifactfeed)'
+    applicationName: 'frs-backend'
+    buildfilespath: '$(pkgRoot)'
+    artifactname: '$(artifactname)'
+    project: 'Motivity-FRS-V2'

@@ -1,0 +1,62 @@
+{
+  "name": "@mlmcps/ml-specs-mcp",
+  "version": "1.2.0",
+  "description": "Model Context Protocol (MCP) server for spec-driven development: read-only spec inventory, knowledge-layer checks, and cross-service contract lookup for Claude, Cursor, VS Code and any MCP client.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test 'scripts/lib/*.test.mjs' 'scripts/*.test.mjs' 'mcp/*.test.mjs' 'tests/*.test.mjs'"
+  },
+  "private": false,
+  "license": "MIT",
+  "bin": {
+    "ml-specs-mcp": "mcp/ml-specs-server.mjs"
+  },
+  "files": [
+    "mcp/",
+    "commands/",
+    "agents/",
+    "scripts/",
+    "!scripts/**/*.test.mjs",
+    "!scripts/lib/*.test.mjs",
+    "!mcp/*.test.mjs",
+    "!tests/",
+    "templates/ci/knowledge-check.mjs",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MLMCPS/ml-specs.git",
+    "directory": "ml-specs"
+  },
+  "homepage": "https://github.com/MLMCPS/ml-specs#readme",
+  "bugs": {
+    "url": "https://github.com/MLMCPS/ml-specs/issues"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "claude",
+    "claude-code",
+    "anthropic",
+    "cursor",
+    "ai",
+    "ai-agent",
+    "llm",
+    "spec-driven-development",
+    "sdd",
+    "specification",
+    "knowledge-base",
+    "developer-tools",
+    "devtools"
+  ],
+  "dependencies": {}
+}

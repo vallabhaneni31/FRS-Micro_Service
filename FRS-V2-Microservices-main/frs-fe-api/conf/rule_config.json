@@ -1,0 +1,23 @@
+{
+  "entrance-cam-01": [
+    {
+      "type": "FaceRecognitionRule",
+      "enabled": true,
+      "priority": "high",
+      "parameters": {
+        "minConfidence": 0.55,
+        "cooldownSeconds": 10,
+        "markAttendance": true,
+        "direction": "entry"
+      }
+    },
+    {
+      "type": "VideoLossRule",
+      "enabled": true,
+      "priority": "high",
+      "parameters": {
+        "timeoutMs": 10000
+      }
+    }
+  ]
+}

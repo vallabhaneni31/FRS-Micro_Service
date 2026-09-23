@@ -1,0 +1,186 @@
+# .semgrep/frs-security-rules.yml — FIX-031: Custom SAST rules for FRS
+# Run: semgrep --config .semgrep/frs-security-rules.yml backend/api/src/
+
+rules:
+
+  # ── Secret / credential exposure ──────────────────────────────────────────────
+
+  - id: frs-hardcoded-secret-env-fallback
+    patterns:
+      - pattern: process.env.$VAR || "$VALUE"
+      - metavariable-regex:
+          metavariable: $VAR
+          regex: '(?i)(secret|password|key|token)'
+      - metavariable-regex:
+          metavariable: $VALUE
+          regex: '.{8,}'
+    message: >
+      Hardcoded fallback value for secret env var $VAR.
+      Never provide a default value for security-critical env vars — fail fast instead.
+    languages: [javascript]
+    severity: ERROR
+    metadata:
+      category: security
+      fix_ref: FIX-001
+      owasp: "A02:2021 - Cryptographic Failures"
+
+  - id: frs-jwt-no-algorithm-check
+    patterns:
+      - pattern: jwt.verify($TOKEN, $SECRET)
+      - pattern-not: jwt.verify($TOKEN, $SECRET, {algorithms: [...]}, ...)
+    message: >
+      jwt.verify() called without explicit algorithms option.
+      Specify algorithms: ['HS256'] to prevent algorithm confusion attacks.
+    languages: [javascript]
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: "A02:2021 - Cryptographic Failures"
+
+  # ── SQL injection ──────────────────────────────────────────────────────────────
+
+  - id: frs-sql-string-concat
+    patterns:
+      - pattern: |
+          $POOL.query(`... ${$VAR} ...`)
+      - pattern-not: |
+          $POOL.query(`... ${$N} ...`, [...])
+    message: >
+      Possible SQL injection via template literal string concatenation in query.
+      Use parameterised queries: pool.query('SELECT ... WHERE id = $1', [id])
+    languages: [javascript]
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: "A03:2021 - Injection"
+
+  - id: frs-sql-string-plus
+    patterns:
+      - pattern: $POOL.query("..." + $VAR + "...")
+    message: >
+      SQL injection risk: string concatenation in DB query.
+      Use parameterised queries with $1, $2 placeholders.
+    languages: [javascript]
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: "A03:2021 - Injection"
+
+  # ── Path traversal ─────────────────────────────────────────────────────────────
+
+  - id: frs-path-join-user-input
+    patterns:
+      - pattern: path.join($BASE, $REQ.params.$PARAM)
+      - pattern-not: path.join($BASE, path.basename($REQ.params.$PARAM))
+    message: >
+      Path traversal risk: req.params.$PARAM used directly in path.join().
+      Always sanitise with path.basename() first.
+    languages: [javascript]
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: "A01:2021 - Broken Access Control"
+
+  - id: frs-path-join-req-body
+    patterns:
+      - pattern: path.join($BASE, $REQ.body.$FIELD)
+    message: >
+      Path traversal risk: req.body.$FIELD used in path.join().
+      Validate and sanitise the filename before filesystem operations.
+    languages: [javascript]
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: "A01:2021 - Broken Access Control"
+
+  # ── Mass assignment ────────────────────────────────────────────────────────────
+
+  - id: frs-spread-req-body
+    patterns:
+      - pattern: "{ ...$REQ.body }"
+    message: >
+      Mass assignment risk: spreading req.body into an object.
+      Use pickAllowed(req.body, [...allowedFields]) from utils/sanitizeBody.js instead.
+    languages: [javascript]
+    severity: WARNING
+    metadata:
+      category: security
+      fix_ref: FIX-019
+      owasp: "A08:2021 - Software and Data Integrity Failures"
+
+  # ── Missing auth on route ──────────────────────────────────────────────────────
+
+  - id: frs-route-missing-require-auth
+    patterns:
+      - pattern: $ROUTER.post($PATH, asyncHandler($HANDLER))
+      - pattern-not: $ROUTER.post($PATH, ..., requireAuth, ..., asyncHandler($HANDLER))
+      - pattern-not: $ROUTER.post($PATH, ..., authenticateDevice, ..., asyncHandler($HANDLER))
+    message: >
+      POST route $PATH has no authentication middleware (requireAuth or authenticateDevice).
+      All state-mutating routes must be authenticated.
+    languages: [javascript]
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: "A01:2021 - Broken Access Control"
+
+  # ── Unsafe regex (ReDoS) ───────────────────────────────────────────────────────
+
+  - id: frs-redos-nested-quantifier
+    patterns:
+      - pattern: new RegExp($STR)
+      - metavariable-regex:
+          metavariable: $STR
+          regex: '.*(\+|\*|\{[0-9]+,\}){2,}.*'
+    message: >
+      Potentially unsafe regex with nested quantifiers — may be vulnerable to ReDoS.
+      Review and use possessive quantifiers or atomic groups if available.
+    languages: [javascript]
+    severity: WARNING
+    metadata:
+      category: security
+      owasp: "A05:2021 - Security Misconfiguration"
+
+  # ── Information disclosure ─────────────────────────────────────────────────────
+
+  - id: frs-error-stack-in-response
+    patterns:
+      - pattern: res.$METHOD({ ..., stack: $ERR.stack, ... })
+    message: >
+      Stack trace sent in HTTP response — discloses internal paths and code structure.
+      Log the stack server-side only; send a generic error message to the client.
+    languages: [javascript]
+    severity: ERROR
+    metadata:
+      category: security
+      owasp: "A05:2021 - Security Misconfiguration"
+
+  - id: frs-scope-in-403-response
+    patterns:
+      - pattern: res.status(403).json({ ..., scope: $SCOPE, ... })
+    message: >
+      Scope information leaked in 403 response body.
+      Log scope server-side only (FIX-011). Return only { message, error } to client.
+    languages: [javascript]
+    severity: WARNING
+    metadata:
+      category: security
+      fix_ref: FIX-011
+
+  # ── Console log in production code ────────────────────────────────────────────
+
+  - id: frs-console-log-in-routes
+    patterns:
+      - pattern: console.log(...)
+    message: >
+      console.log() found in production code. Use the structured logger:
+      import logger from '../utils/logger.js' then logger.info({meta}, 'message').
+    languages: [javascript]
+    paths:
+      include:
+        - "backend/api/src/routes/**"
+        - "backend/api/src/middleware/**"
+        - "backend/api/src/services/**"
+    severity: WARNING
+    metadata:
+      fix_ref: FIX-016

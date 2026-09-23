@@ -1,0 +1,15 @@
+@import 'tailwindcss' source(none);
+@source '../**/*.{js,ts,jsx,tsx}';
+
+@import 'tw-animate-css';
+
+/* Tailwind v4 Preflight sets `cursor: default` on buttons; restore the
+   pointer cursor for interactive elements (disabled ones stay default). */
+@layer base {
+  button:not(:disabled),
+  [role='button']:not(:disabled),
+  label:has(> input[type='checkbox']),
+  a[href] {
+    cursor: pointer;
+  }
+}

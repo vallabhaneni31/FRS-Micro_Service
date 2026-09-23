@@ -1,0 +1,154 @@
+# ==============================================================================
+# Environment, Credentials & Local Secrets
+# ==============================================================================
+.env
+.env.local
+.env.*.local
+.env.bak*
+*.env.bak*
+.env.backup*
+!.env.example
+*.env
+
+# Local npm/yarn prefix & configuration (machine-specific)
+.npmrc
+.yarnrc
+.yarnrc.yml
+.npm/
+
+# ==============================================================================
+# Dependencies & Package Managers
+# ==============================================================================
+node_modules/
+node_modules
+.pnp
+.pnp.js
+.yarn-integrity
+
+# ==============================================================================
+# Build & Compiler Outputs
+# ==============================================================================
+dist/
+dist-ssr/
+build/
+out/
+*.local
+.cache/
+.parcel-cache/
+.vite/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+
+# MediaPipe WASM runtime + model for the enrollment portal — regenerated from
+# node_modules by scripts/sync-mediapipe-assets.mjs on `npm run build`/`dev`.
+public/mediapipe/
+
+# ==============================================================================
+# Log & Runtime Debug Files
+# ==============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ==============================================================================
+# OS-Specific Files & Metadata
+# ==============================================================================
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.stackdump
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ==============================================================================
+# IDEs, Code Editors & AI Agent Artifacts
+# ==============================================================================
+# VS Code / VSCodium
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+.vscode-test/
+*.code-workspace
+.history/
+
+# AI Assistants & Code Agents
+.codex
+.gemini/
+.antigravity/
+.claude-scratch/
+.cursor/
+.cursorrules
+.windsurf/
+.zed/
+
+# Claude Code local-only settings (Graphify hook, personal overrides).
+# .claude/settings.json itself IS tracked — it's the team-shared ml-specs plugin config.
+.claude/settings.local.json
+
+# Spec-Driven Development & Knowledge Layer (Explicitly Tracked)
+!specs/
+!specs/**
+!docs/
+!docs/**
+!CLAUDE.md
+
+# Graphify (local codebase knowledge graph) — generated, machine-specific
+graphify-out/
+*.graphify-bak
+
+# JetBrains (IntelliJ, WebStorm, PyCharm, etc.)
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Visual Studio / Windows Dev Tools
+.vs/
+*.suo
+*.user
+*.userosv
+*.sln.docstates
+*.ntvs*
+*.njsproj
+*.sln
+
+# Vim / Emacs / Swap files
+*.sw?
+*.swp
+*.swo
+\#*\#
+.\#*
+
+# ==============================================================================
+# Temporary Files, Scratch Scripts & Debug Artifacts
+# ==============================================================================
+tmp/
+temp/
+tmp_*
+*.tmp
+*.temp

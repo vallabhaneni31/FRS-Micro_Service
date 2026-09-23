@@ -1,0 +1,296 @@
+# ==============================================================================
+# Environment, Credentials & Local Secrets
+# ==============================================================================
+.env
+.env.local
+.env.*.local
+.env.bak*
+*.env.bak*
+.env.backup*
+!.env.example
+*.env
+backend/api-retail/.env.retail
+backend/api-retail/.env.retail.local
+
+# Certificates & Private Keys
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+
+# Local npm/yarn prefix & configuration (machine-specific)
+.npmrc
+.yarnrc
+.yarnrc.yml
+.npm/
+
+# ==============================================================================
+# Dependencies & Package Managers
+# ==============================================================================
+node_modules/
+node_modules
+.pnp
+.pnp.js
+.yarn-integrity
+
+# ==============================================================================
+# Build & Compiler Outputs
+# ==============================================================================
+dist/
+dist-ssr/
+build/
+out/
+target/
+*.class
+*.local
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vite/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+
+# ==============================================================================
+# Log & Runtime Debug Files
+# ==============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ==============================================================================
+# OS-Specific Files & Metadata
+# ==============================================================================
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.stackdump
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ==============================================================================
+# IDEs, Code Editors & AI Agent Artifacts
+# ==============================================================================
+# VS Code / VSCodium
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+.vscode-test/
+*.code-workspace
+.history/
+
+# AI Assistants & Code Agents
+.codex
+.gemini/
+.antigravity/
+.claude-scratch/
+.cursor/
+.cursorrules
+.windsurf/
+.zed/
+
+# Spec-Driven Development & Knowledge Layer (Explicitly Tracked)
+!specs/
+!specs/**
+!docs/
+!docs/**
+!CLAUDE.md
+
+# Graphify (local codebase knowledge graph) — generated, machine-specific
+graphify-out/
+*.graphify-bak
+
+# JetBrains (IntelliJ, WebStorm, PyCharm, etc.)
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Visual Studio / Windows Dev Tools
+.vs/
+*.suo
+*.user
+*.userosv
+*.sln.docstates
+*.ntvs*
+*.njsproj
+*.sln
+*.cvs
+
+# Vim / Emacs / Swap files
+*.sw?
+*.swp
+*.swo
+\#*\#
+.\#*
+
+# ==============================================================================
+# Python Caches & Virtual Environments
+# ==============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+venv/
+.venv/
+env/
+ENV/
+
+# ==============================================================================
+# Databases, Local Storage & Runtime Uploads
+# ==============================================================================
+*.sqlite
+*.sqlite3
+*.db
+*.sql
+!backend/api/src/db/migrations/*.sql
+!backend/api-retail/src/db/migrations/*.sql
+!frontend/src/db/migrations/*.sql
+!backend/api/scripts/schema-drift-patch.sql
+!backend/api-transport/src/main/resources/db/migration/*.sql
+
+# Keycloak Local Data & Realm Configurations
+keycloak_data/
+infra/keycloak/
+infra/keycloak/realm-config/*.json
+!infra/keycloak/realm-config/.gitkeep
+
+# Runtime uploads — binary data / PII (never commit)
+backend/api/uploads/
+backend/api/uploads/attendance-photos/
+backend/api/uploads/enrollment-photos/
+backend/api/uploads/remote-enrollment/
+uploads/
+
+# ==============================================================================
+# Generated Infrastructure & Environment Files
+# ==============================================================================
+infra/nginx/nginx.conf
+infra/keycloak-native/keycloak.service
+
+# PM2 process definitions — per-host (which services run here, instance counts)
+ecosystem.config.cjs
+
+# ==============================================================================
+# Temporary Files, Scratch Scripts & Debug Artifacts
+# ==============================================================================
+tmp/
+temp/
+tmp_*
+*.tmp
+*.temp
+backend/api/temp/
+backend/api/scratch_query.js
+backend/api/scratch_*.js
+backend/api/test_heatmap_scope.js
+
+# ==============================================================================
+# One-off Maintenance Scripts, Backups & Trackers
+# ==============================================================================
+# Maintenance Scripts
+fix_*.sh
+fix_*.py
+deploy-*.sh
+final_fix.sh
+changes.sh
+diagnose.sh
+verify_setup.sh
+test_suite.sh
+test-brute-force.sh
+QUICK_COMMANDS.sh
+restart_backend.sh
+add-remaining-limits.sh
+add_memory_limits.py
+generate_test_cases.cjs
+
+# Backup Files
+*.bak
+*.backup
+*.before-*
+*.pre-*
+*.orig
+*.rej
+docker-compose.yml.*
+
+# Local Trackers, Reports & Audits
+*.xlsx
+PRODUCTION_READY.txt
+WEEK1_IMPLEMENTATION_SUMMARY.md
+INTEGRATION_READINESS_CHECKLIST.md
+WEEK1_IMPLEMENTATION_PLAN.md
+COMMIT_MESSAGE.md
+FRS_ENTERPRISE_AUDIT_REPORT.md
+FRS_ENTERPRISE_AUDIT_REPORT_*.md    
+FRS_IMPLEMENTATION_PLAN_PHASE1.md
+FRS_IMPLEMENTATION_PLAN_PHASE2.md
+FRS_IMPLEMENTATION_PLAN_PHASE*.md
+FRS_IMPLEMENTATION_SUMMARY.md
+FRS_IMPLEMENTATION_SUMMARY_*.md
+
+# Local npm prefix (machine-specific absolute path)
+.npmrc
+
+# Python virtual environments and bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+venv/
+.venv/
+
+# MediaPipe task/model bundles — auto-downloaded on first run by
+# mediapipe_engine.py (same pattern as InsightFace's ~/.insightface cache),
+# not committed.
+backend/api/scripts/models/
+
+# MediaPipe WASM runtime + model for the enrollment portal (~26 MB).
+# Regenerated from node_modules by frontend/scripts/sync-mediapipe-assets.mjs,
+# which runs automatically on `npm run build` / `npm run dev`.
+frontend/public/mediapipe/
+
+# Retail service real config (see .env.retail.example for the template)
+backend/api-retail/.env.retail
+backend/api-retail/.env.retail.local
+
+# Throwaway scratch artifacts (reports, etc.) generated during agent sessions
+.claude-scratch/
+
+
+temp/
+uploads/
+References/
+infra/
